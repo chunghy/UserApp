@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -44,16 +46,13 @@ public class EventFragment extends Fragment implements View.OnClickListener{
     private static final String TAG_AMOUNT = "amount";
     private static final String TAG_IMG = "eventImg";
 
-    String title;
-    String content;
-
-
     long now = System.currentTimeMillis()+32400000;
 
     SimpleDateFormat sdfNow = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     String strNow = sdfNow.format(new Date(now));
 
     ArrayList<HashMap<String, String>> eventList;
+
     ListView list;
     String myJSON;
 
@@ -67,6 +66,7 @@ public class EventFragment extends Fragment implements View.OnClickListener{
         View view = inflater.inflate(R.layout.fragment_event, container, false);
         list = (ListView) view.findViewById(R.id.eventListView);
         eventList = new ArrayList<>();
+
 
         GetData task = new GetData();
         try {
@@ -98,17 +98,6 @@ private class GetData extends AsyncTask<String, Void, String> {
             myJSON = result;
             showList();
 
-            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    Intent intent = new Intent(getContext(), openEvent.class);
-
-                    intent.putExtra("title2", title);
-                    intent.putExtra("content2",content);
-                    startActivity(intent);
-                }
-            });
         }
 
         @Override
@@ -161,11 +150,11 @@ private class GetData extends AsyncTask<String, Void, String> {
 
 //                String num = c.optString(TAG_NUM);
                 String id = c.optString(TAG_ID);
-                title = c.optString(TAG_TITLE);
-                content = c.optString(TAG_CONTENT);
+                String title = c.optString(TAG_TITLE);
+                String content = c.optString(TAG_CONTENT);
                 String start = c.optString(TAG_START);
                 String close = c.optString(TAG_CLOSE);
-//                String amount = c.optString(TAG_AMOUNT);
+                String amount = c.optString(TAG_AMOUNT);
 //                String img = c.optString(TAG_IMG);
 
                 HashMap<String, String> list = new HashMap<>();
@@ -176,7 +165,7 @@ private class GetData extends AsyncTask<String, Void, String> {
                 list.put(TAG_CONTENT, content);
                 list.put(TAG_START, start);
                 list.put(TAG_CLOSE, close);
-//                list.put(TAG_AMOUNT, amount);
+                list.put(TAG_AMOUNT, amount);
 //                list.put(TAG_IMG, img);
 
                 eventList.add(list);
@@ -184,12 +173,29 @@ private class GetData extends AsyncTask<String, Void, String> {
 
             ListAdapter adapter = new SimpleAdapter(
                     getActivity(), eventList, R.layout.event,
-                    new String[]{ TAG_TITLE, TAG_CONTENT, TAG_START, TAG_CLOSE},
-                    new int[]{ R.id.eventTitle, R.id.eventContent, R.id.startTime, R.id.closeTime}
+                    new String[]{ TAG_AMOUNT, TAG_TITLE, TAG_CONTENT, TAG_START, TAG_CLOSE},
+                    new int[]{ R.id.amount, R.id.eventTitle, R.id.eventContent, R.id.startTime, R.id.closeTime}
             );
 
 
             list.setAdapter(adapter);
+
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    Intent intent = new Intent(getContext(), openEvent.class);
+
+                    String title = eventList.get(position).get(TAG_TITLE);
+                    String content = eventList.get(position).get(TAG_CONTENT);
+                    String amount = eventList.get(position).get(TAG_AMOUNT);
+
+                    intent.putExtra("title2", title);
+                    intent.putExtra("content2",content);
+                    intent.putExtra("amount2", amount);
+                    startActivity(intent);
+                }
+            });
 
         } catch (JSONException e) {
             e.printStackTrace();

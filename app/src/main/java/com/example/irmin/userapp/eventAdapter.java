@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 public class eventAdapter extends BaseAdapter {
@@ -48,6 +46,9 @@ public class eventAdapter extends BaseAdapter {
 
         TextView content = (TextView) convertView.findViewById(R.id.content2);
         content.setText(item.getContent2());
+
+        TextView amount = (TextView) convertView.findViewById(R.id.amount2);
+        amount.setText(item.getAmount2());
 
         return convertView;
     }
