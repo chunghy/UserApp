@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/eventListView"
-            android:dividerHeight="10dp"
+            android:dividerHeight="15dp"
             android:divider="#ffffff"
             android:padding="5dp"></ListView>
 
